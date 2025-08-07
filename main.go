@@ -11,8 +11,9 @@ import (
 
 func main() {
 	room := dungeon.CreateRoom(10, 6)
-	p := player.NewPlayer(4, 4) // Starting position (not a wall)
+	p := player.NewPlayer(4, 4)
 	prog := tea.NewProgram(tui.NewModel(room, p))
+
 	if _, err := prog.Run(); err != nil {
 		log.Fatal(err)
 	}
