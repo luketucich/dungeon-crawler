@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/luketucich/dungeon-crawler/misc"
 	"log"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -11,7 +12,7 @@ import (
 
 func main() {
 	room := dungeon.CreateRoom(10, 6)
-	p := player.NewPlayer(4, 4)
+	p := player.NewPlayer(4, 4, make([]misc.Item, 0))
 	prog := tea.NewProgram(tui.NewModel(room, p))
 
 	if _, err := prog.Run(); err != nil {

@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"github.com/luketucich/dungeon-crawler/dungeon"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -9,12 +10,12 @@ import (
 )
 
 type model struct {
-	room   [][]rune
+	room   dungeon.Room
 	player player.Player
 }
 
-func NewModel(room [][]rune, p player.Player) tea.Model {
-	return model{room: room, player: p}
+func NewModel(r dungeon.Room, p player.Player) tea.Model {
+	return model{room: r, player: p}
 }
 
 func (m model) Init() tea.Cmd { return nil }
@@ -47,17 +48,17 @@ func (m model) View() string {
 		return style.Render("  ")
 	}
 
-	for y := range m.room {
-		for x := range m.room[y] {
+	for y := range m.room.Height {
+		for x := range m.room.Width {
 			if m.player.X == x && m.player.Y == y {
 				b.WriteString(render("#0096FF", true))
 				continue
 			}
 
-			switch m.room[y][x] {
-			case '#':
+			switch m.room.Tiles[y][x].Structure {
+			case "wall":
 				b.WriteString(render("#555", false))
-			case '.':
+			case "floor":
 				b.WriteString(render("#ccc", false))
 			default:
 				b.WriteString("  ")
