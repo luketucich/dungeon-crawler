@@ -18,14 +18,10 @@ func NewPlayer(x, y int, inventory []misc.Item) Player {
 func (p *Player) Move(dx, dy int, room dungeon.Room) {
 	newX := p.X + dx
 	newY := p.Y + dy
-
-	// Check bounds
-	if newY < 0 || newY >= room.Height-1 || newX < 0 || newX >= room.Width-1 {
-		return
-	}
+	newTile := room.Tiles[newY][newX]
 
 	// Check collision with wall
-	if room.Tiles[newY][newX].Structure == "wall" {
+	if newTile.Structure == "wall" {
 		return
 	}
 

@@ -60,6 +60,8 @@ func (m model) View() string {
 				b.WriteString(render("#555", false))
 			case "floor":
 				b.WriteString(render("#ccc", false))
+			case "door":
+				b.WriteString(render("#ccc", false))
 			default:
 				b.WriteString("  ")
 			}
