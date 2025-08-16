@@ -16,17 +16,17 @@ func NewPlayer(x, y int, inventory []misc.Item) Player {
 }
 
 func (p *Player) Move(dx, dy int, room dungeon.Room) {
-	newX := p.X + dx
-	newY := p.Y + dy
-	newTile := room.Tiles[newY][newX]
+	newX, newY := p.X+dx, p.Y+dy
+	if newX < 0 || newY < 0 || newY >= room.Height || newX >= room.Width {
+		return
+	}
 
-	// Check collision with wall
+	newTile := room.Tiles[newY][newX]
 	if newTile.Structure == "wall" {
 		return
 	}
 
-	p.X = newX
-	p.Y = newY
+	p.X, p.Y = newX, newY
 }
 
 func (p *Player) GrabItem(item misc.Item) {

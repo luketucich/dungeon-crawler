@@ -1,8 +1,14 @@
 package dungeon
 
 import (
+	"github.com/luketucich/dungeon-crawler/misc"
 	"math/rand"
-	"time"
+)
+
+const (
+	smallRoomArea  = 36
+	mediumRoomArea = 100
+	largeRoomArea  = 256
 )
 
 type Room struct {
@@ -28,12 +34,15 @@ func isBorder(x, y, width, height int) bool {
 	return y == 0 || y == height-1 || x == 0 || x == width-1
 }
 
-func shuffleSlice[T any](s []T) {
-	rand.Seed(time.Now().UnixNano())
-	rand.Shuffle(len(s), func(i, j int) { s[i], s[j] = s[j], s[i] })
-}
+func CreateRoom(sizes ...int) Room {
+	var width, height int
 
-func CreateRoom(width, height int) Room {
+	if len(sizes) == 2 {
+		width, height = sizes[0], sizes[1]
+	} else {
+		width, height = generateRoomSize()
+	}
+
 	tiles := make([][]Tile, height)
 	perimeterCap := max(0, (width-2)*2+(height-2)*2)
 	possibleDoors := make([][]int, 0, perimeterCap)
@@ -53,12 +62,11 @@ func CreateRoom(width, height int) Room {
 	}
 
 	room := Room{tiles, possibleDoors, width, height}
-	addDoors(room, generateDoorCount(room))
-
+	addDoors(&room, generateDoorCount(width*height))
 	return room
 }
 
-func addDoors(room Room, count int) {
+func addDoors(room *Room, count int) {
 	if len(room.PossibleDoors) == 0 || count <= 0 {
 		return
 	}
@@ -66,7 +74,7 @@ func addDoors(room Room, count int) {
 		count = len(room.PossibleDoors)
 	}
 
-	shuffleSlice(room.PossibleDoors)
+	misc.ShuffleSlice(room.PossibleDoors)
 
 	for i := 0; i < count; i++ {
 		x, y := room.PossibleDoors[i][0], room.PossibleDoors[i][1]
@@ -74,23 +82,28 @@ func addDoors(room Room, count int) {
 	}
 }
 
-func generateDoorCount(room Room) int {
-	roomArea := room.Width * room.Height
-
-	if roomArea <= 16 {
+func generateDoorCount(roomArea int) int {
+	if roomArea <= smallRoomArea {
 		return 1
-	} else if roomArea <= 81 {
+	} else if roomArea <= mediumRoomArea {
 		return 2
-	} else if roomArea <= 160 {
-		return 3
 	} else {
-		return 4
+		return 3
 	}
 }
 
-func max(a, b int) int {
-	if a > b {
-		return a
+func generateRoomSize() (width, height int) {
+	roll := rand.Intn(100)
+	switch {
+	case roll < 50:
+		return misc.Sqrt(smallRoomArea), misc.Sqrt(smallRoomArea)
+	case roll < 85:
+		return misc.Sqrt(mediumRoomArea), misc.Sqrt(mediumRoomArea)
+	default:
+		return misc.Sqrt(largeRoomArea), misc.Sqrt(largeRoomArea)
 	}
-	return b
+}
+
+func updateTile(room *Room, x, y int, structure string) {
+	room.Tiles[y][x] = Tile{x, y, structure}
 }

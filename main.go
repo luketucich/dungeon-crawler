@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	room := dungeon.CreateRoom(6, 6)
+	room := dungeon.CreateRoom()
 	p := player.NewPlayer(2, 2, make([]misc.Item, 0))
 	prog := tea.NewProgram(tui.NewModel(room, p))
 
